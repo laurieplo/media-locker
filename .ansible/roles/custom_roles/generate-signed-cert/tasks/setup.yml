@@ -1,0 +1,17 @@
+---
+
+- name: Ensure apache ssl directory exists
+  file: path=/etc/apache2/ssl state=directory owner=root group=root mode=0655
+  become: yes
+
+- name: Copy ssl certificate
+  copy: src={{generate_signed_cert_dir}}/public/cert_signed.pem dest=/etc/apache2/ssl/{{ generate_signed_cert_key_name }}.crt owner=root group=root mode=0644 remote_src=True
+  become: yes
+
+- name: Copy ssl chain certificate
+  copy: src={{generate_signed_cert_dir}}/public/cert_signed.pem dest=/etc/apache2/ssl/{{ generate_signed_cert_key_name }}.chain.crt owner=root group=root mode=0644 remote_src=True
+  become: yes
+
+- name: Copy ssl certificate key
+  copy: src={{generate_signed_cert_dir}}/private/key.pem dest=/etc/apache2/ssl/{{ generate_signed_cert_key_name }}.key owner=root group=root mode=0644 remote_src=True
+  become: yes

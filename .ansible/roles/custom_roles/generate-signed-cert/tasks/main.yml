@@ -1,0 +1,12 @@
+---
+
+- name: Generate keys
+  become: yes
+  become_user: "{{generate_signed_cert_user}}"
+  include: generate.yml
+
+- name: Setup keys
+  become: yes
+  become_user: "{{generate_signed_cert_user}}"
+  include: setup.yml
+  when: generate_signed_cert_key_name is defined

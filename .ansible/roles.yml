@@ -1,0 +1,24 @@
+- src: git@gitlab.inovia.fr:ansible/common.git
+  scm: git
+  version: "2.0.4"
+  path: roles/galaxy_roles/
+
+- src: git@gitlab.inovia.fr:ansible/apache2.git
+  scm: git
+  version: "2.0.5"
+  path: roles/galaxy_roles/
+
+- src: git@gitlab.inovia.fr:ansible/php.git
+  scm: git
+  version: "4.0.0"
+  path: roles/galaxy_roles/
+
+- src: git@gitlab.inovia.fr:ansible/log.git
+  scm: git
+  version: "2.1.0"
+  path: roles/galaxy_roles/
+
+- src: git@gitlab.inovia.fr:ansible/php-xdebug.git
+  scm: git
+  version: "0.1.2"
+  path: roles/galaxy_roles/

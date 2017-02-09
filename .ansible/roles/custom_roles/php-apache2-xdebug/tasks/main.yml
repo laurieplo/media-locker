@@ -1,0 +1,17 @@
+---
+
+- name: Create /home/vagrant log dirs
+  become: yes
+  file: "path=/home/vagrant state=directory"
+
+- name: Set xdebug for command line - key
+  become: yes
+  shell: "echo 'export XDEBUG_CONFIG=\"idekey=sublime.xdebug\"' >> /home/vagrant/.bashrc"
+  tags:
+    - xdebug
+
+- name: Set xdebug for command line - remove host
+  become: yes
+  shell: "echo 'alias php=\"php -dxdebug.remote_host=`netstat -rn | grep \"^0.0.0.0 \" | cut -d \" \" -f10`\"' >> /home/vagrant/.bashrc"
+  tags:
+    - xdebug

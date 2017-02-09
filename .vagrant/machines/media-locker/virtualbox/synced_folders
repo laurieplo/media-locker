@@ -1,0 +1,1 @@
+{"nfs":{"vagrant-media-locker":{"id":"vagrant-media-locker","type":"nfs","guestpath":"/var/www/media-locker","hostpath":"/Users/laurieplociennik/Projects/media-locker","disabled":false,"__vagrantfile":true,"map_uid":501,"map_gid":20,"nfs_udp":true,"nfs_version":3,"uuid":"2728693006"}}}

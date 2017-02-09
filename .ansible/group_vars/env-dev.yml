@@ -1,0 +1,36 @@
+# Application staging
+stage: dev
+alert_email: "laurie.plociennik@gmail.com"
+project_path: "/var/www/media-locker"
+
+apache_apps:
+  - name: "media-locker"
+    enabled: true
+    ssl: false
+    create_document_root_directory: false
+    vhosts:
+      - servername: "media-locker.dev"
+        ssl: false
+        extra_parameters: ['RewriteEngine on','RewriteRule ^/(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]']
+      - servername: "media-locker.dev"
+        ssl: true
+        certificate_file: '/etc/apache2/ssl/media-locker.crt'
+        certificate_key_file: '/etc/apache2/ssl/media-locker.key'
+        documentroot: "/var/www/media-locker/public/"
+
+php_error_reporting: "E_ALL"
+php_display_errors: "On"
+
+logrotate_log_paths:
+  - /var/www/media-locker/log/*.log
+
+php_apache2_xdebug_enable: true
+
+generate_signed_cert_local_root_cert: "pem/dev/root_ca_cert.pem"
+generate_signed_cert_local_root_key: "pem/dev/root_ca_key.pem"
+generate_signed_cert_dir: "/etc/ssl/certs"
+generate_signed_cert_email: "{{alert_email}}"
+generate_signed_cert_organisation: "Laurieplo"
+generate_signed_cert_domain: "media-locker.dev"
+generate_signed_cert_type: "domain"
+generate_signed_cert_key_name: "media-locker"

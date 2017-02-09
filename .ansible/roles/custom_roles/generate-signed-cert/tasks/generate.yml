@@ -1,0 +1,53 @@
+---
+
+- name: ensure directory exists
+  file: path={{ item.dir }} state=directory mode={{item.mode}}
+  with_items:
+    - { dir: '{{generate_signed_cert_dir}}/private', mode: '0755'}
+    - { dir: '{{generate_signed_cert_dir}}/public', mode: '0755'}
+    - { dir: '{{generate_signed_cert_dir}}/authority', mode: '0755'}
+
+- name: generate root key
+  shell: >
+    openssl genrsa -out {{generate_signed_cert_dir}}/private/ca_key.pem 2048
+  when: generate_signed_cert_local == "yes"
+
+- name: generate root ca
+  shell: >
+    openssl req -x509 -new -nodes -key {{generate_signed_cert_dir}}/private/ca_key.pem -sha256 -days 3650
+    -out {{generate_signed_cert_dir}}/authority/ca_cert.pem
+    -subj '/C=FR/ST=Some-State/L=Paris/O={{ generate_signed_cert_organisation }}/emailAddress={{ generate_signed_cert_email }}'
+  when: generate_signed_cert_local == "yes"
+
+- name: copy the root ca
+  copy: >
+    src="{{generate_signed_cert_local_root_cert}}"
+    dest="{{generate_signed_cert_dir}}/authority/ca_cert.pem"
+    owner="{{generate_signed_cert_user}}"
+    mode=0644
+  when: generate_signed_cert_local == "no"
+
+- name: copy the root key
+  copy: >
+    src="{{generate_signed_cert_local_root_key}}"
+    dest="{{generate_signed_cert_dir}}/private/ca_key.pem"
+    owner="{{generate_signed_cert_user}}"
+    mode=0644
+  when: generate_signed_cert_local == "no"
+
+- name: generate key
+  shell: >
+    openssl genrsa -out {{generate_signed_cert_dir}}/private/key.pem 2048
+
+- name: generate certificate for an ip
+  include: generate_ip.yml
+  when: generate_signed_cert_type == "ip"
+
+- name: generate certificate for a domain
+  include: generate_domain.yml
+  when: generate_signed_cert_type == "domain"
+
+- name: remove root key from server
+  file: >
+    path={{generate_signed_cert_dir}}/private/ca_key.pem
+    state=absent

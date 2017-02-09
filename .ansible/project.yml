@@ -1,0 +1,31 @@
+- name: Install and configure PHP webserver
+  hosts: app-web
+  become: yes
+  roles:
+  - common
+  - generate-signed-cert
+  - apache2
+  - php
+  - log
+
+- name: Install specific config for xdebug
+  hosts: env-dev
+  become: yes
+  roles:
+      - php-xdebug
+      - php-apache2-xdebug
+  vars:
+    xdebug_params:
+      - {name: 'xdebug.remote_enable', value: '1'}
+      - {name: 'xdebug.remote_connect_back', value: '1'}
+      - {name: 'xdebug.idekey', value: '"sublime.xdebug"'}
+      - {name: 'xdebug.profiler_enable', value: '1'}
+      - {name: 'xdebug.profiler_enable_trigger', value: '1'}
+      - {name: 'xdebug.profiler_output_dir', value: '"/tmp/xdebugprofiler/"'}
+      - {name: 'xdebug.var_display_max_depth ', value: '10'}
+      - {name: 'xdebug.max_nesting_level', value: '1000'}
+  handlers:
+    - name: reload webserver
+      service: name=apache2 enabled=yes state=restarted
+  tags:
+    - xdebug

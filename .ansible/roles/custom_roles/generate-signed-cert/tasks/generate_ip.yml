@@ -1,0 +1,18 @@
+---
+
+- name: generate cert
+  shell: >
+    openssl req -new -key {{generate_signed_cert_dir}}/private/key.pem
+    -out {{generate_signed_cert_dir}}/public/cert.pem -days 3650
+    -subj '/C=FR/ST=Some-State/L=Paris/O={{ generate_signed_cert_organisation }}/CN={{ generate_signed_cert_ip }}/emailAddress={{ generate_signed_cert_email }}'
+
+- name: create conf file
+  shell: >
+    echo subjectAltName = IP:{{ generate_signed_cert_ip }},IP:127.0.0.1 > /tmp/extfile.cnf
+
+- name: sign the logstash cert with the root cert
+  shell: >
+    openssl x509 -req -in {{generate_signed_cert_dir}}/public/cert.pem
+    -CA {{generate_signed_cert_dir}}/authority/ca_cert.pem -CAkey {{generate_signed_cert_dir}}/private/ca_key.pem
+    -CAcreateserial -out {{generate_signed_cert_dir}}/public/cert_signed.pem
+    -days 3650 -sha512 -extfile /tmp/extfile.cnf
